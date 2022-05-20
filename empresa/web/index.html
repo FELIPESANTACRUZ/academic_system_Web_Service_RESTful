@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Sistema Empresarial</title>
+        <!-- URL DESSA PAGINA: http://localhost:8080/empresa/ -->
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+         <!-- JavaScript Bundle with Popper -->
+<!-- CSS only -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">         
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2" crossorigin="anonymous"></script>
+    </head>
+    
+    <body>
+        <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+  <div class="container-fluid">
+      <a class="navbar-brand" href="javascript:void(0)"><img src="https://i.pinimg.com/originals/57/50/d9/5750d963b623970dce19242025e373d3.jpg" alt="Luz" width="60" height="40"></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mynavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="mynavbar">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0)">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0)">Cursos</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="javascript:void(0)">Sobre</a>
+        </li>
+      </ul>
+      <form class="d-flex">
+        <input class="form-control me-2" type="text" placeholder="Procurar">
+        <button class="btn btn-primary" type="button">Procurar</button>
+      </form>
+    </div>
+  </div>
+</nav>
+        <div class="container" >
+        <h1  style="margin-top: 50px" >Sistema Empresarial</h1>
+        <table>
+            <tr> <td><strong>MATRICULA:</strong></td> <td><input type="text" id="txtNumat"></td></tr>
+            <tr> <td><strong>NOME:</strong></td> <td><input type="text" id="txtNome"></td></tr>
+            <tr> <td><strong>SALARIO:</strong></td> <td><input type="text" id="txtSalario"></td></tr>
+            <tr> <td><strong>SEXO:</strong></td> <td><input type="text" id="txtSexo"></td></tr>
+            <tr> <td><strong>N° DEPARTAMENTO:</strong></td> <td><input type="text" id="txtDepartamento"></td></tr>
+            <tr> <td><strong>N° SUPERVISOR:</strong></td> <td><input type="text" id="txtSupervisor"></td></tr>
+            <tr><td></td><td>
+                    <input type="button" value="Consultar" class="btn btn-success" onclick="consultarFuncionario()">
+                    <input type="button" value="Adicionar" class="btn btn-primary" onclick="adicionarFuncionario()">
+                    <input type="button" value="Atualizar" class="btn btn-warning" onclick="atualizarFuncionario()">
+                    <input type="button" value="Remover" class="btn btn-danger" onclick="removerFuncionario()">
+                    <input type="button" value="Limpar" class="btn btn-secondary" onclick="limparCampos()">
+                </td></tr>
+        </table >
+        <h1 style="margin-top: 60px"><label id="msgErro">Mensagem status:</label></h1>
+        </div>
+        <script>
+            const txtNumat = document.getElementById('txtNumat');
+            const txtNome = document.getElementById('txtNome');
+            const txtSalario = document.getElementById('txtSalario');
+            const txtSexo = document.getElementById('txtSexo');
+            const txtDepartamento = document.getElementById('txtDepartamento');
+            const txtSupervisor = document.getElementById('txtSupervisor');
+            const msgErro = document.getElementById("msgErro");
+            
+            function carregarFuncionario(jsonFuncionario){
+                txtNumat.value = jsonFuncionario.numat;
+                txtNome.value = jsonFuncionario.nome;
+                txtSalario.value = jsonFuncionario.salario;
+                txtSexo.value = jsonFuncionario.sexo;
+                txtDepartamento.value = jsonFuncionario.departamento;
+                txtSupervisor.value = jsonFuncionario.supervisor;
+            }
+            
+            async function consultarFuncionario(){
+        fetch('http://localhost:8080/empresa/sistema/rest/funcionarios/'+txtNumat.value). 
+        then(resposta => { 
+        if (!resposta.ok){ 
+        throw Error(resposta.status);  
+        } 
+        return resposta.json(); 
+        }). 
+        then(jsonReposta => carregarFuncionario(jsonReposta)).  
+        catch(erro => msgErro.innerHTML = 'Mensagem status: Funcionario NUMAT [' + txtNumat.value+'] não encontrado. Erro ['+erro.message+']');
+            } 
+            
+            async function adicionarFuncionario(){
+                fetch('http://localhost:8080/empresa/sistema/rest/funcionarios/',  
+{method: 'POST', 
+body: JSON.stringify({ 
+        numat: txtNumat.value, 
+        nome: txtNome.value, 
+        salario: txtSalario.value, 
+        sexo: txtSexo.value, 
+        ndepto: txtDepartamento.value, 
+        nsuper: txtSupervisor.value 
+}), 
+    headers: { 
+        "Content-type": "application/json" 
+} 
+}). 
+then(resposta => { 
+   if (!resposta.ok){ 
+       throw Error(resposta.status);  
+   } 
+   return resposta; 
+ }). 
+then(jsonReposta => msgErro.innerHTML = 'Mensagem status Funcionario NUMAT ['+ txtNumat.value+'] inserido').  
+catch(erro => msgErro.innerHTML = 'Mensagem status: Funcionario NUMAT [' + txtNumat.value+'] não inserido. Erro['+erro.message+']');  
+}
+
+async function atualizarFuncionario(){
+    fetch('http://localhost:8080/empresa/sistema/rest/funcionarios/',  
+{method: 'PUT', 
+body: JSON.stringify({ 
+        numat: txtNumat.value, 
+        nome: txtNome.value, 
+        salario: txtSalario.value, 
+        sexo: txtSexo.value, 
+        ndepto: txtDepartamento.value, 
+        nsuper: txtSupervisor.value 
+    }), 
+    headers: { 
+        "Content-type": "application/json" 
+    } 
+}). 
+then(resposta => { 
+   if (!resposta.ok){
+       throw Error(resposta.status);  
+   } 
+   return resposta; 
+ }). 
+then(jsonReposta => msgErro.innerHTML = 'mensagem status: Funcionario NUMAT['+ txtNumat.value+'] atualizado'). 
+catch(erro => msgErro.innerHTML = 'Mensagem status: Funcionario NUMAT ['+ txtNumat.value+'] não atualizado. Erro ['+erro.message+']'); 
+}
+
+async function removerFuncionario(){
+    fetch('http://localhost:8080/empresa/sistema/rest/funcionarios/'+ txtNumat.value,{method: 'DELETE'}). 
+then(resposta => { 
+   if (!resposta.ok){ 
+       throw Error(resposta.status);  
+   } 
+   return resposta; 
+ }). 
+then(jsonReposta => msgErro.innerHTML = 'Mensagem status: Funcionario NUMAT [' + txtNumat.value+'] removido.').  
+catch(erro => msgErro.innerHTML = 'Mensagem status: Funcionario NUMAT [' + txtNumat.value+'] não removido. Erro ['+ erro.message+']'); 
+}
+
+function limparCampos(){
+    txtNumat.value = ''; 
+    txtNome.value = ''; 
+    txtSalario.value = ''; 
+    txtSexo.value = ''; 
+    txtDepartamento.value = ''; 
+    txtSupervisor.value = ''; 
+}
+        </script>
+    </body>
+</html>
